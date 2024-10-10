@@ -6,12 +6,18 @@ const PORT = 3000;
 
 //Server static files to be used by template
 app.use(express.static('./styles'));
+app.use(express.static('./images'));
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
 
-//extract form data
+//built-in middleware function in Express to extract form data
 app.use(express.urlencoded({ extended: true }));
+
+//error handling middleware
+app.use((err,req,res,next)=>{
+    res.status(400).send(err.message);
+})
 
 app.get('/', (req, res) => {
     const data = {
@@ -40,6 +46,16 @@ const data = {
 
 res.render('info', data);
 });
+
+//download image
+app.get('/downloadinfoimg', (req, res) => {
+    res.download('./images/infoimg.jpg','infoimg.jpg',(err)=>{
+        if (err){
+            console.log('Error downloading file:',err);
+            res.status(500).send(`Error occurred downloading file.`)
+        }
+    })
+    });
 
 //Listen for server
 app.listen(PORT, ()=>{
